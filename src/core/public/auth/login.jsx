@@ -1,11 +1,24 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import ForgotPasswordModal from './ForgotPassword';
+import { useLogin } from '@/hooks/useLogin';
 
 const LoginPage = () => {
-  const handleSubmit = (e) => {
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
+  const { login, isLoading, error } = useLogin(); // Get login function and states
+  const navigate = useNavigate(); // For redirection
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add login logic here
+    const result = await login(email, password);
+    
+    if (result.success) {
+      
+      navigate('/'); // Redirect on successful login
+    }
   };
 
   return (
@@ -37,6 +50,8 @@ const LoginPage = () => {
                 id="email"
                 className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border border-neutral-200 focus:outline-none focus:border-neutral-400 text-sm md:text-base"
                 placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -50,10 +65,13 @@ const LoginPage = () => {
                 id="password"
                 className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border border-neutral-200 focus:outline-none focus:border-neutral-400 text-sm md:text-base"
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
 
+            {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
               <label className="flex items-center">
                 <input
@@ -62,18 +80,31 @@ const LoginPage = () => {
                 />
                 <span className="ml-2 text-sm text-neutral-600 font-light">Remember me</span>
               </label>
-              <button type="button" className="text-sm text-neutral-600 hover:text-neutral-900 font-light">
-                Forgot password?
-              </button>
+              <a 
+                href="#" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsForgotPasswordOpen(true);
+                }}
+                className="font-light text-neutral-600 hover:text-neutral-900"
+              >
+                Forgot your password?
+              </a>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-neutral-900 text-white py-2.5 md:py-3 rounded-lg hover:bg-neutral-800 transition-colors text-sm md:text-base"
+              disabled={isLoading} // Disable button when loading
             >
-              Sign in
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
 
+            {/* Display Errors */}
+            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+            {/* Sign Up Link */}
             <div className="text-center">
               <p className="text-sm text-neutral-600 font-light">
                 Don't have an account?{' '}
@@ -94,6 +125,12 @@ const LoginPage = () => {
           className="w-full h-full object-cover"
         />
       </div>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        isOpen={isForgotPasswordOpen}
+        onClose={() => setIsForgotPasswordOpen(false)}
+      />
     </div>
   );
 };
