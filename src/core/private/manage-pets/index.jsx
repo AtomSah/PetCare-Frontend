@@ -297,7 +297,7 @@ const ManagePets = () => {
                         {pet.location}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${pet.price}
+                        {pet.price}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -690,7 +690,7 @@ const ManagePets = () => {
                   <h3 className="text-md font-medium text-gray-700 mb-2">Pricing and Description</h3>
                   <div className="grid grid-cols-1 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Price ()</label>
                       <input
                         type="text"
                         name="price"

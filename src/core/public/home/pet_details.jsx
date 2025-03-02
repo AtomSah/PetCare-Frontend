@@ -125,7 +125,7 @@ const PetDetailsPage = () => {
               <div className="p-6 flex flex-col">
                 <div className="mb-4">
                   <h1 className="text-3xl font-semibold text-gray-900">{pet?.name}</h1>
-                  <p className="text-xl text-[#2196f3] font-medium">${pet?.price}</p>
+                  <p className="text-xl text-[#2196f3] font-medium">Rs{pet?.price}</p>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 mb-6">

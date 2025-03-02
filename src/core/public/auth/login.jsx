@@ -201,18 +201,12 @@ const LoginPage = () => {
 
       {/* Right side - Image */}
       <div className="hidden md:block md:w-2/5 relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#2196f3]/80 to-[#1976d2]/90 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-gradient-to-r mix-blend-multiply"></div>
         <img
           src="src/assets/image/5482557.jpg"
           alt="Login background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-white">
-          <h3 className="text-2xl font-bold mb-3">Your Pet's Best Friend</h3>
-          <p className="text-center max-w-md text-white/90 text-sm">
-            Join our community of pet lovers and find the perfect companion for your home.
-          </p>
-        </div>
       </div>
 
       {/* Forgot Password Modal */}

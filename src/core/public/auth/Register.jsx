@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import signupImage from '../../../assets/image/login_pet.jpg';
+import signupImage from '../../../assets/image/register.jpg';
 import { useRegister } from '@/hooks/useRegister';
 
 const Register = () => {
@@ -27,43 +27,12 @@ const Register = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left side - Image with overlay text */}
-      <div className="hidden md:flex md:w-2/5 bg-[#2196f3] relative overflow-hidden">
+      <div className=" md:flex md:w-2/5 relative overflow-hidden">
         <img 
           src={signupImage} 
           alt="Signup background" 
-          className="w-full h-full object-cover mix-blend-overlay opacity-90"
+          className="w-fit h-full   opacity-90"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#2196f3]/90 to-[#2196f3]/70"></div>
-        <div className="absolute inset-0 flex flex-col justify-center px-12 text-white">
-          <h2 className="text-3xl font-bold mb-6">Join our pet community</h2>
-          <p className="text-xl mb-8">Find your perfect furry companion and access exclusive pet care services.</p>
-          <div className="space-y-6">
-            <div className="flex items-center">
-              <div className="bg-white/20 p-2 rounded-full mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <p>Easy pet booking process</p>
-            </div>
-            <div className="flex items-center">
-              <div className="bg-white/20 p-2 rounded-full mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <p>Access to premium pet services</p>
-            </div>
-            <div className="flex items-center">
-              <div className="bg-white/20 p-2 rounded-full mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <p>Connect with other pet lovers</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Right side - Signup Form */}

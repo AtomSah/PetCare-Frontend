@@ -85,7 +85,7 @@ const BookingForm = ({ pet, onClose, onSubmit }) => {
         </button>
         
         <h2 className="text-2xl font-medium text-gray-900 mb-1">Book {pet?.name}</h2>
-        <p className="text-[#2196f3] mb-6">${pet?.price}</p>
+        <p className="text-[#2196f3] mb-6">Rs{pet?.price}</p>
         
         {errors.submit && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
