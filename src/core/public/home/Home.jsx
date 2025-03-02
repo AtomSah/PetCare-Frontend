@@ -98,10 +98,15 @@ const HomePage = () => {
                 Connecting loving homes with pets in need. Browse our available pets and find your perfect companion.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                <button onClick={() => navigate('/pets')} className="px-8 py-3 bg-gradient-to-r from-[#2196f3] to-[#1976d2] text-white font-medium rounded-full shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-0.5">
+              <button 
+                  onClick={() => {
+                    petsNearYouRef.current.scrollIntoView({ behavior: 'smooth' });
+                  }} 
+                  className="px-8 py-3 bg-gradient-to-r from-[#2196f3] to-[#1976d2] text-white font-medium rounded-full shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-0.5"
+                >
                   Find a Pet
                 </button>
-                <button onClick={() => navigate('/services')} className="px-8 py-3 bg-white text-[#2196f3] font-medium rounded-full shadow-sm hover:shadow-md border border-[#2196f3]/20">
+                <button onClick={() => navigate('/services')} className="px-8 py-3 bg-gradient-to-r from-[#2196f3] to-[#1976d2] text-white font-medium rounded-full shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-0.5">
                   Our Services
                 </button>
               </div>
@@ -109,7 +114,7 @@ const HomePage = () => {
             <div className="md:w-1/2 relative">
               <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1601979031925-424e53b6caaa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGV0c3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60" 
+                  src="src/assets/image/cat/landing2.jpeg" 
                   alt="Happy pets" 
                   className="w-full h-96 object-cover"
                 />
@@ -126,34 +131,9 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-semibold text-gray-800">Find Your Perfect Companion</h2>
-            <p className="mt-2 text-gray-600">Search by name, breed, or location</p>
           </div>
           
-          {/* Search Bar */}
-          <div className="relative max-w-2xl mx-auto mb-8">
-            <input
-              type="text"
-              placeholder="Start typing to search..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="w-full bg-[#f5f9fc] rounded-full py-3 pl-12 pr-4 border-none shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2196f3]/50 transition-all duration-300"
-            />
-            <svg
-              className="absolute left-4 top-3.5 h-5 w-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
 
-          {/* Pet Type Filters */}
           <div className="flex justify-center gap-4 mb-8">
             {['All', 'Cat', 'Dog'].map((filter) => (
               <button
