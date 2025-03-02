@@ -1,5 +1,6 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
+import Footer from './footer';
 
 const ServicesPage = () => {
   const services = [
@@ -153,13 +154,7 @@ const ServicesPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-600">
-            © 2025 PetCare. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

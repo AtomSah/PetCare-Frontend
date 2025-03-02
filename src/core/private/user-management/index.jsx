@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthContext';
 
-const User = () => {
-  const { userId } = useParams();
+const Users = () => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
-  const [bookings, setBookings] = useState([]);
-  const [userData, setUserData] = useState(null);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
 
   // Check if user is admin
   useEffect(() => {
@@ -21,80 +21,75 @@ const User = () => {
     }
   }, [user, navigate]);
 
-  // Fetch user data and bookings
+  // Fetch all users
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUsers = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
         
-        // Fetch user data
-        const userResponse = await axios.get(`http://localhost:5000/api/users/${userId}`, {
+        const response = await axios.get('http://localhost:5000/api/users', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
         
-        // Fetch user's bookings
-        const bookingsResponse = await axios.get(`http://localhost:5000/api/bookings/user/${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        setUserData(userResponse.data);
-        setBookings(bookingsResponse.data);
-        console.log(bookingsResponse.data,"jjjj");
-        
+        setUsers(response.data);
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Failed to load user bookings. Please try again later.');
+        console.error('Error fetching users:', err);
+        setError('Failed to load users. Please try again later.');
         setLoading(false);
       }
     };
 
-    if (userId) {
-      fetchData();
+    fetchUsers();
+  }, []);
+
+  // Filter users based on search and role
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch = 
+      user.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.phone && user.phone.includes(searchTerm));
+    
+    const matchesRole = selectedRole === '' || user.role === selectedRole;
+    
+    return matchesSearch && matchesRole;
+  });
+
+  // Delete user function
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) {
+      return;
     }
-  }, [userId]);
+
+    try {
+      const token = localStorage.getItem('token');
+      
+      await axios.delete(`http://localhost:5000/api/users/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      // Remove user from state
+      setUsers(users.filter(user => user._id !== userId));
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      setError('Failed to delete user. Please try again.');
+    }
+  };
 
   // Format date
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  // Get status badge style
-  const getStatusBadgeClass = (status) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'confirmed':
-        return 'bg-green-100 text-green-800';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
   };
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">
-          User Bookings
-        </h1>
-        <button
-          onClick={() => navigate('/admin/users')}
-          className="flex items-center text-blue-500 hover:text-blue-700"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Users
-        </button>
-      </div>
+      <h1 className="text-2xl font-semibold text-gray-800 mb-6">User Management</h1>
       
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -102,148 +97,167 @@ const User = () => {
         </div>
       )}
       
+      {/* Filters */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex-1">
+          <input
+            type="text"
+            placeholder="Search by name, email or phone..."
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="w-full md:w-48">
+          <select
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+          >
+            <option value="">All Roles</option>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </div>
+      
+      {/* User Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Total Users</h3>
+          <p className="text-3xl font-bold text-blue-600">{users.length}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Admins</h3>
+          <p className="text-3xl font-bold text-purple-600">
+            {users.filter(user => user.role === 'admin').length}
+          </p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Regular Users</h3>
+          <p className="text-3xl font-bold text-green-600">
+            {users.filter(user => user.role === 'user').length}
+          </p>
+        </div>
+      </div>
+      
+      {/* Users Table */}
       {loading ? (
         <div className="flex justify-center items-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       ) : (
-        <>
-          {/* User Info Card */}
-          {userData && (
-            <div className="bg-white shadow rounded-lg p-6 mb-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0 h-20 w-20">
-                  {userData.avatar ? (
-                    <img 
-                      className="h-20 w-20 rounded-full object-cover" 
-                      src={`http://localhost:5000${userData.avatar}`} 
-                      alt="" 
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.fullname)}&background=random&size=80`;
-                      }}
-                    />
-                  ) : (
-                    <img 
-                      className="h-20 w-20 rounded-full" 
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userData.fullname)}&background=random&size=80`} 
-                      alt="" 
-                    />
-                  )}
-                </div>
-                <div className="ml-6">
-                  <h2 className="text-xl font-semibold text-gray-900">{userData.fullname}</h2>
-                  <p className="text-gray-600">{userData.email}</p>
-                  <p className="text-gray-600">{userData.phone || 'No phone provided'}</p>
-                  <p className="mt-1">
-                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      userData.role === 'admin' 
-                        ? 'bg-purple-100 text-purple-800' 
-                        : 'bg-green-100 text-green-800'
-                    }`}>
-                      {userData.role === 'admin' ? 'Admin' : 'User'}
-                    </span>
-                  </p>
-                </div>
-                <div className="ml-auto text-right">
-                  <p className="text-sm text-gray-500">Member since</p>
-                  <p className="text-gray-900">{new Date(userData.createdAt).toLocaleDateString()}</p>
-                  <p className="mt-2 text-sm text-gray-500">Total Bookings</p>
-                  <p className="text-gray-900">{bookings.length}</p>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Bookings List */}
-          <div className="bg-white shadow rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900">Booking History</h3>
-            </div>
-            
-            {bookings.length === 0 ? (
-              <div className="p-6 text-center">
-                <p className="text-gray-500">No bookings found for this user.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Pet
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Booking Info
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {bookings.map((booking) => (
-                      <tr key={booking._id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="h-10 w-10 flex-shrink-0">
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    User
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Contact
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Role
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Joined
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                      No users found
+                    </td>
+                  </tr>
+                ) : (
+                  filteredUsers.map((userData) => (
+                    <tr key={userData._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            {userData.avatar ? (
                               <img 
                                 className="h-10 w-10 rounded-full object-cover" 
-                                src={booking.pet ? `http://localhost:5000${booking.pet.image}` : 'https://via.placeholder.com/40?text=No+Image'}
-                                alt=""
+                                src={`http://localhost:5000${userData.avatar}`} 
+                                alt="" 
                                 onError={(e) => {
                                   e.target.onerror = null;
-                                  e.target.src = 'https://via.placeholder.com/40?text=No+Image';
+                                  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.fullname)}&background=random`;
                                 }}
                               />
+                            ) : (
+                              <img 
+                                className="h-10 w-10 rounded-full" 
+                                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userData.fullname)}&background=random`} 
+                                alt="" 
+                              />
+                            )}
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {userData.fullname}
                             </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
-                                {booking.pet ? booking.pet.name : 'Unknown Pet'}
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {booking.pet ? `${booking.pet.breed} (${booking.pet.type})` : ''}
-                              </div>
+                            <div className="text-sm text-gray-500">
+                              {userData._id}
                             </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{booking.name}</div>
-                          <div className="text-sm text-gray-500">{booking.contact}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(booking.status)}`}>
-                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(booking.createdAt)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{userData.email}</div>
+                        <div className="text-sm text-gray-500">{userData.phone || 'No phone provided'}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          userData.role === 'admin' 
+                            ? 'bg-purple-100 text-purple-800' 
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {userData.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatDate(userData.createdAt)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button
+                          onClick={() => navigate(`/admin/users/${userData._id}`)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => navigate(`/admin/users/edit/${userData._id}`)}
+                          className="text-indigo-600 hover:text-indigo-900 mr-3"
+                        >
+                          Edit
+                        </button>
+                        {user._id !== userData._id && (
                           <button
-                            onClick={() => navigate(`/admin/bookings/${booking._id}`)}
-                            className="text-blue-600 hover:text-blue-900"
+                            onClick={() => handleDeleteUser(userData._id)}
+                            className="text-red-600 hover:text-red-900"
                           >
-                            View Details
+                            Delete
                           </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
 };
 
-export default User;
+export default Users;

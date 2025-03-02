@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import ForgotPasswordModal from './ForgotPassword';
 import { useLogin } from '@/hooks/useLogin';
 
 const LoginPage = () => {
@@ -126,11 +125,6 @@ const LoginPage = () => {
         />
       </div>
 
-      {/* Forgot Password Modal */}
-      <ForgotPasswordModal
-        isOpen={isForgotPasswordOpen}
-        onClose={() => setIsForgotPasswordOpen(false)}
-      />
     </div>
   );
 };

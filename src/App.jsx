@@ -3,10 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Public routes
 import Register from "./core/public/auth/Register";
-import ForgotPassword from "./core/public/auth/ForgotPassword";
 import HomePage from "./core/public/home/Home";
 import LoginPage from "./core/public/auth/Login";
-import ResetPasswordPage from "./core/public/auth/ResetPassword";
 import ServicesPage from "./core/public/components/ServicesPage";
 import ContactPage from "./core/public/components/ContactPage";
 import AboutPage from "./core/public/components/AboutPage";
@@ -32,9 +30,6 @@ const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <Register /> },
-  { path: "/forgot-password", element: <ForgotPassword /> },
-  { path: "/reset-password", element: <ResetPasswordPage /> },
-  { path: "/reset-password/:token", element: <ResetPasswordPage /> },
   { path: "/about", element: <AboutPage /> },
   { path: "/contact", element: <ContactPage /> },
   { path: "/services", element: <ServicesPage /> },
@@ -54,6 +49,7 @@ const router = createBrowserRouter([
           { path: "pets", element: <ManagePets /> },
           { path: "bookings", element: <Booking /> },
           { path: "users", element: <UserManagement /> },
+          { path: "users/edit/:id", element: <UserManagement /> },
           { path: "users/:userId/bookings", element: <User /> },
         ],
       },
