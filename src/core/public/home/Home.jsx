@@ -286,10 +286,20 @@ const HomePage = () => {
                       </p>
                     </div>
                     <div className="mt-6">
-                      <button 
+                    <button 
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent card click
-                          navigate(`/pet/${pet._id}`);
+                          
+                          // Check if user is logged in
+                          const token = localStorage.getItem('token');
+                          if (!token) {
+                            // If not logged in, show alert and redirect to login page
+                            alert("Please login first to book a pet");
+                            navigate('/login');
+                          } else {
+                            // If logged in, navigate to the pet booking page
+                            navigate(`/pet/${pet._id}`);
+                          }
                         }}
                         className="w-full py-3 bg-[#e3f2fd] text-[#2196f3] text-sm font-medium rounded-xl hover:bg-[#2196f3] hover:text-white transition-colors duration-300 flex items-center justify-center"
                       >
