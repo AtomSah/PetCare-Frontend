@@ -18,7 +18,7 @@ export const AuthContextProvider = ({ children }) => {
     user: null
   });
 
-  // Check if user is already logged in (on app initialization)
+  // Check if user is already logged in
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     const token = localStorage.getItem('token');
@@ -28,10 +28,15 @@ export const AuthContextProvider = ({ children }) => {
     }
   }, []);
 
-  console.log('AuthContext state:', state);
+  // Logout function
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    dispatch({ type: 'LOGOUT' });
+  };
 
   return (
-    <AuthContext.Provider value={{ ...state, dispatch }}>
+    <AuthContext.Provider value={{ ...state, dispatch, logout }}>
       {children}
     </AuthContext.Provider>
   );

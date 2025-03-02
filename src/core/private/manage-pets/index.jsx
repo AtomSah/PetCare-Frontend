@@ -469,7 +469,7 @@ const ManagePets = () => {
                   <h3 className="text-md font-medium text-gray-700 mb-2">Pricing and Description</h3>
                   <div className="grid grid-cols-1 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
                       <input
                         type="text"
                         name="price"
